@@ -1,0 +1,8 @@
+Flask
+flask-restful
+yfinance
+pandas
+pandas_ta
+requests
+boto3
+botocore

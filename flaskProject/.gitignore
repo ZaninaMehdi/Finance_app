@@ -1,0 +1,37 @@
+# Ignorer les environnements virtuels nommés de manière courante
+venv/
+env/
+ENV/
+.venv/
+.virtualenv/
+
+# Ignorer le dossier de configuration de PyCharm
+.idea/
+
+# Ignorer les fichiers compilés Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ignorer les logs
+*.log
+
+# Ignorer les fichiers temporaires
+*.tmp
+*.temp
+*.swp
+
+# Ignorer les fichiers de base de données SQLite
+*.sqlite3
+
+# Ignorer les répertoires de build
+build/
+dist/
+*.egg-info/
+
+# Ignorer les fichiers de couverture de tests
+.coverage
+htmlcov/
+
+# Ignorer les caches
+.cache/
