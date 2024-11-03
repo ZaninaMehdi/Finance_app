@@ -1,3 +1,8 @@
+import json
+import boto3
+import yfinance as yf
+from gnews import GNews
+
 def get_yahoo_news(self, ticker):
         stock = yf.Ticker(ticker)
         return stock.news
