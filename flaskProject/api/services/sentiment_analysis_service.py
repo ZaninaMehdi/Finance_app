@@ -3,16 +3,16 @@ import boto3
 import yfinance as yf
 from gnews import GNews
 
-def get_yahoo_news(self, ticker):
+def get_yahoo_news(ticker):
         stock = yf.Ticker(ticker)
         return stock.news
 
-def get_gnews(self, company_name):
+def get_gnews(company_name):
         news_client = GNews(language='en', country='US', max_results=25)
         query = f"{company_name} AND (stock OR shares)"
         return news_client.get_news(query)
 
-def create_analysis_prompt(self, yahoo_news, gnews_articles, annual_report):
+def create_analysis_prompt(yahoo_news, gnews_articles, annual_report):
         prompt = f"""You are a senior financial analyst with over 20 years of experience in stock recommendation and market analysis. 
         Based on the following information, provide a sentiment analysis for BCE (Bell Canada).
         
@@ -43,7 +43,7 @@ def create_analysis_prompt(self, yahoo_news, gnews_articles, annual_report):
         
         return prompt
 
-def get_claude_sentiment(self, prompt):
+def get_claude_sentiment(prompt):
         bedrock = boto3.client(
             service_name='bedrock-runtime',
             region_name='us-west-2'  # Replace with your region
