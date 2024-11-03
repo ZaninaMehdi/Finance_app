@@ -1,9 +1,9 @@
-// src/App.tsx
-import React, { useState, useEffect } from "react";
-import TechnicalAnalysisCharts from "./components/TechnicalAnalysisCharts";
-import { getAnalysis, ApiResponse } from "./services/apiService";
+import React, { useState, useEffect } from 'react';
+import TechnicalAnalysisCharts from './components/TechnicalAnalysisCharts';
+import { getAnalysis, ApiResponse } from './services/apiService';
+import ChatWidget from './components/chatWidget';
+import './App.css';
 
-// Define the type of the transformed data
 interface ChartData {
   Date: string[];
   Close: number[];
@@ -14,23 +14,21 @@ interface ChartData {
 }
 
 const App: React.FC = () => {
-  // Update the type of chartData to ChartData
   const [chartData, setChartData] = useState<ChartData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getAnalysis("AMZN"); // Replace "AAPL" with any company identifier as needed
+        const data = await getAnalysis('AMZN');
         setChartData(transformData(data));
       } catch (err) {
-        setError("Erreur lors du chargement des données.");
+        setError('Error loading data.');
       }
     };
     fetchData();
   }, []);
 
-  // Transform JSON data into the required structure for the chart component
   const transformData = (json: ApiResponse): ChartData => {
     return {
       Date: json.technical_analysis.map((item) => item.Date),
@@ -45,12 +43,15 @@ const App: React.FC = () => {
   return (
     <div>
       <h1>Financial Dashboard</h1>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
       {chartData ? (
         <TechnicalAnalysisCharts data={chartData} />
       ) : (
         <p>Loading data...</p>
       )}
+
+      {/* Chat Widget */}
+      <ChatWidget />
     </div>
   );
 };
