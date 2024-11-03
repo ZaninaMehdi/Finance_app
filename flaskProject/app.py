@@ -7,7 +7,7 @@ from api.resources.analysis import AnalysisResource
 from api.resources.technical_analysis import TechnicalAnalysisResource
 from api.resources.news import NewsResource
 from api.resources.bedrock import BedrockResource
-import api.resources.sentiment_analysis as Sentiment
+from api.resources.sentiment_analysis import SentimentAnalysisResource
 
 app = Flask(__name__)
 CORS(app)  # Initialiser CORS pour l'application
@@ -16,7 +16,7 @@ api = Api(app)
 # Configuration des routes
 api.add_resource(AnalysisResource, '/api/analysis')
 api.add_resource(TechnicalAnalysisResource, '/api/technical_analysis')
-api.add_resource(Sentiment, '/api/sentiment_analysis')
+api.add_resource(SentimentAnalysisResource, '/api/sentiment_analysis')
 api.add_resource(NewsResource, '/api/news')
 api.add_resource(BedrockResource, '/api/bedrock')
 
