@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useParams } from "react-router-dom"; // Import useParams
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "../src/ui/tab";
 import TechnicalAnalysisCharts from "./components/TechnicalAnalysisCharts";
 import FundamentalAnalysisTables from "./components/FundamentalAnalysisTables";
@@ -25,6 +26,7 @@ interface ChartData {
 }
 
 const App: React.FC = () => {
+  const { companyName } = useParams<{ companyName: string }>(); // Get companyName from params
   const [chartData, setChartData] = useState<ChartData | null>(null);
   const [fundamentalData, setFundamentalData] =
     useState<FundamentalAnalysisResponse | null>(null);
@@ -36,38 +38,44 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const fetchTechnicalData = async () => {
-      try {
-        const data = await getAnalysis("AMZN");
-        setChartData(transformData(data));
-      } catch (err) {
-        setError("Erreur lors du chargement des données techniques.");
+      if (companyName) { // Check if companyName is available
+        try {
+          const data = await getAnalysis(companyName);
+          setChartData(transformData(data));
+        } catch (err) {
+          setError("Erreur lors du chargement des données techniques.");
+        }
       }
     };
 
     const fetchFundamentalData = async () => {
-      try {
-        const data = await getFundamentalAnalysis("AMZN");
-        setFundamentalData(data);
-      } catch (err) {
-        setError("Erreur lors du chargement des données fondamentales.");
+      if (companyName) { // Check if companyName is available
+        try {
+          const data = await getFundamentalAnalysis(companyName);
+          setFundamentalData(data);
+        } catch (err) {
+          setError("Erreur lors du chargement des données fondamentales.");
+        }
       }
     };
 
     const fetchComprehensiveData = async () => {
-      try {
-        const data = await getComprehensiveAnalysis("AMZN");
-        setComprehensiveData(data);
-      } catch (err) {
-        setError(
-          "Erreur lors du chargement des données de l'analyse complète."
-        );
+      if (companyName) { // Check if companyName is available
+        try {
+          const data = await getComprehensiveAnalysis(companyName);
+          setComprehensiveData(data);
+        } catch (err) {
+          setError(
+            "Erreur lors du chargement des données de l'analyse complète."
+          );
+        }
       }
     };
 
     fetchTechnicalData();
     fetchFundamentalData();
     fetchComprehensiveData();
-  }, []);
+  }, [companyName]); // Add companyName to the dependency array
 
   const transformData = (json: ApiResponse): ChartData => {
     const sortedData = json.technical_analysis.sort(
@@ -121,7 +129,7 @@ const App: React.FC = () => {
   return (
     <div className="w-[70vw] h-[100vh] bg-white shadow-lg rounded-lg p-6 overflow-y-auto mx-auto">
       <h1 className="text-3xl font-bold mb-6 text-center">
-        Financial Dashboard
+        Financial Dashboard for {companyName}
       </h1>
       {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
@@ -223,7 +231,6 @@ const App: React.FC = () => {
           </div>
         </div>
       )}
-
     </div>
   );
 };
