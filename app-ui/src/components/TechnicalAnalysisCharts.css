@@ -1,0 +1,19 @@
+/* src/components/TechnicalAnalysisCharts.css */
+
+.chart-container {
+  display: grid;
+  grid-template-columns: 1fr; /* Single column */
+  gap: 20px;
+  padding: 20px;
+  height: 100vh;
+  width: 100vw;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.chart-item {
+  flex: 1;
+  min-height: 200px; /* Minimum height to ensure charts are visible */
+  max-height: 400px; /* Maximum height for responsive design */
+  height: calc(100% / 5); /* Divide evenly for 5 charts */
+}
