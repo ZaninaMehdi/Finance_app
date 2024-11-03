@@ -13,7 +13,8 @@ import {
   getComprehensiveAnalysis,
   ComprehensiveAnalysisResponse,
 } from "./services/comprehensiveAnalysisService";
-
+import ChatWidget from './components/chatWidget';
+import './App.css';
 interface ChartData {
   Date: string[];
   Close: number[];
@@ -125,7 +126,8 @@ const App: React.FC = () => {
             </p>
           )}
         </TabsContent>
-      </Tabs>
+      </Tabs>{/* Chat Widget */}
+      <ChatWidget />
     </div>
   );
 };
