@@ -12,7 +12,6 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import "./TechnicalAnalysisCharts.css";
 
 ChartJS.register(
   CategoryScale,
@@ -42,11 +41,11 @@ const TechnicalAnalysisCharts: React.FC<TechnicalAnalysisChartsProps> = ({
   data,
 }) => {
   return (
-    <div className="chart-container">
-      <h2>Technical Analysis Charts</h2>
+    <div className="grid gap-5 p-5 h-screen w-full overflow-y-auto">
+      <h2 className="text-2xl font-bold mb-4">Technical Analysis Charts</h2>
 
       {/* Close Price Chart */}
-      <div className="chart-item">
+      <div className="flex-1 min-h-[200px] max-h-[400px] h-1/5">
         <Line
           data={{
             labels: data.Date,
@@ -64,7 +63,7 @@ const TechnicalAnalysisCharts: React.FC<TechnicalAnalysisChartsProps> = ({
       </div>
 
       {/* Volume Chart */}
-      <div className="chart-item">
+      <div className="flex-1 min-h-[200px] max-h-[400px] h-1/5">
         <Line
           data={{
             labels: data.Date,
@@ -82,7 +81,7 @@ const TechnicalAnalysisCharts: React.FC<TechnicalAnalysisChartsProps> = ({
       </div>
 
       {/* RSI Chart */}
-      <div className="chart-item">
+      <div className="flex-1 min-h-[200px] max-h-[400px] h-1/5">
         <Line
           data={{
             labels: data.Date,
@@ -100,7 +99,7 @@ const TechnicalAnalysisCharts: React.FC<TechnicalAnalysisChartsProps> = ({
       </div>
 
       {/* MACD Chart */}
-      <div className="chart-item">
+      <div className="flex-1 min-h-[200px] max-h-[400px] h-1/5">
         <Line
           data={{
             labels: data.Date,
@@ -118,7 +117,7 @@ const TechnicalAnalysisCharts: React.FC<TechnicalAnalysisChartsProps> = ({
       </div>
 
       {/* MACD Histogram Chart */}
-      <div className="chart-item">
+      <div className="flex-1 min-h-[200px] max-h-[400px] h-1/5">
         <Bar
           data={{
             labels: data.Date,
