@@ -10,15 +10,11 @@ from api.resources.bedrock import BedrockResource
 from api.resources.fundamental_analysis import FundamentalAnalysisResource  # Importer la nouvelle ressource
 from api.resources.sentiment_analysis import SentimentAnalysisResource
 from api.resources.report_summarizer import ReportSummarizerResource
-
+from api.resources.agent import AgentResource
+from api.resources.chat import ChatResource
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {
-    "origins": ["http://localhost:5173"],  # Assuming your React app runs on port 3000
-    "methods": ["GET", "POST", "OPTIONS"],
-    "allow_headers": ["Content-Type"]
-}})
-
+CORS(app)
 api = Api(app)
 
 # Configuration des routes
@@ -29,8 +25,10 @@ api.add_resource(NewsResource, '/api/news')
 api.add_resource(BedrockResource, '/api/bedrock')
 api.add_resource(FundamentalAnalysisResource, '/api/fundamental_analysis')  # Ajouter la nouvelle route
 api.add_resource(ReportSummarizerResource, '/api/report_summary')
+api.add_resource(AgentResource, '/api/agent')
+api.add_resource(ChatResource, '/api/chat')
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(debug=True)
     

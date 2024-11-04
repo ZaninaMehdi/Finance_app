@@ -104,14 +104,28 @@ class CompanyConfig:
     def get_all_instances(cls):
         """Get all active CompanyConfig instances"""
         return cls._instances
-    
+        
     def update_knowledge_base_arn(self, new_arn):
         """Thread-safe update of knowledge_base_arn"""
         with self._lock:
             self.knowledge_base_arn = new_arn
             logger.info(f"Updated knowledge_base_arn for {self.company_name} to {new_arn}")
             return self.knowledge_base_arn
-    
+            
+    def update_agent_id(self, agent_id):
+        """Thread-safe update of agent_id"""
+        with self._lock:
+            self.agent_id = agent_id
+            logger.info(f"Updated agent_id for {self.company_name} to {agent_id}")
+            return self.kb_role_arn
+            
+    def update_agent_alias_id(self, agent_alias_id):
+        """Thread-safe update of agent_alias_id"""
+        with self._lock:
+            self.agent_alias_id = agent_alias_id
+            logger.info(f"Updated agent_alias_id for {self.company_name} to {agent_alias_id}")
+            return self.kb_role_arn
+            
     def update_kb_role_arn(self, new_arn):
         """Thread-safe update of kb_role_arn"""
         with self._lock:
@@ -239,6 +253,8 @@ class CompanyConfig:
         self.current_role = None
         self.collection_arn = None
         self.knowledge_base_arn = None
+        self.agent_id = None
+        self.agent_alias_id = None
         self.agent_instruction = """
         You are an agent that support users working with Financial Annual Reports or other financial data. You have access to Financial Annual Reports and Data in form of a JSON in a Knowledge Base
         and you can Answer questions from this documentation. Only answer questions based on the documentation and reply with
