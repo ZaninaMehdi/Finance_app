@@ -10,8 +10,7 @@ import {
   getAnalysis,
   getFundamentalAnalysis,
   ApiResponse,
-  getSentimentAnalysis, // Added import
-
+  getSentimentAnalysis,
   FundamentalAnalysisResponse,
 } from "../services/apiService";
 import {
@@ -31,6 +30,7 @@ interface ChartData {
 
 const Dashboard: React.FC = () => {
   const { companyName } = useParams<{ companyName: string }>();
+  const [companyLongName, setCompanyLongName] = useState<string>("");
   const [chartData, setChartData] = useState<ChartData | null>(null);
   const [fundamentalData, setFundamentalData] =
     useState<FundamentalAnalysisResponse | null>(null);
@@ -43,6 +43,24 @@ const Dashboard: React.FC = () => {
   const popupRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const fetchCompanyLongName = async () => {
+      if (companyName) {
+        try {
+          const data = await getComprehensiveAnalysis(companyName);
+          // console.log("data", data);
+          setCompanyLongName(data.analysis.info.longName || companyName);
+          // console.log("oka", companyLongName)
+        } catch (err) {
+          console.error("Error fetching company long name:", err);
+          setCompanyLongName(companyName); // Fallback to ticker symbol
+        }
+      }
+    };
+
+    fetchCompanyLongName();
+  }, [companyName]);
+
+  useEffect(() => {
     const fetchTechnicalData = async () => {
       if (companyName) {
         try {
@@ -53,7 +71,6 @@ const Dashboard: React.FC = () => {
         }
       }
     };
-    
 
     const fetchFundamentalData = async () => {
       if (companyName) {
@@ -106,7 +123,7 @@ const Dashboard: React.FC = () => {
     
     if (companyName) {
       try {
-        const sentiment = await getSentimentAnalysis("tinker", companyName);
+        const sentiment = await getSentimentAnalysis(companyName, companyLongName);
         setSentimentData(sentiment);
       } catch (err) {
         setError("Erreur lors du chargement des données de sentiment.");
@@ -130,7 +147,6 @@ const Dashboard: React.FC = () => {
     };
   };
 
-
   useEffect(() => {
     if (isPopupOpen) {
       document.addEventListener("keydown", handleKeyPress);
@@ -148,19 +164,16 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen">
-      {/* SideBar en haut, prenant 20% de la hauteur */}
       <div className="h-[20%] w-full bg-gray-800 text-white flex items-center justify-center shadow-lg">
         <SideBar />
       </div>
 
-      {/* Contenu principal prenant 80% de la hauteur */}
-      <div className="flex-grow w-[70%] p-6 overflow-y-auto bg-white"> {/* Adjusted width to 70% */}
+      <div className="flex-grow w-[70%] p-6 overflow-y-auto bg-white">
         <h1 className="mb-6 text-3xl font-bold text-center">
-          Financial Dashboard for {companyName}
+          Financial Dashboard for {companyLongName}
         </h1>
         {error && <p className="mb-4 text-center text-red-500">{error}</p>}
 
-        {/* Bouton Sentiment */}
         {chartData && (
           <button
             onClick={handleSentimentClick}
@@ -214,11 +227,9 @@ const Dashboard: React.FC = () => {
           </div>
         </Tabs>
 
-        {/* Chat Widget */}
         <ChatWidget />
       </div>
 
-      {/* Popup pour Sentiment */}
       {isPopupOpen && (
         <SentimentPopup
           data={sentimentData}

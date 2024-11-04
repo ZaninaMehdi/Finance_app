@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://b50d-34-213-171-250.ngrok-free.app/api";
+const API_BASE_URL = "https://bb5d-54-203-17-143.ngrok-free.app/api";
 
 // Interfaces pour les données d'analyse complète
 interface CompanyInfo {
@@ -105,6 +105,7 @@ export const getComprehensiveAnalysis = async (
         'Content-Type': 'application/json',
       },
     });
+    console.log(response)
 
     if (!response.ok) {
       throw new Error(

@@ -1,6 +1,6 @@
 // src/services/apiService.ts
 
-const API_BASE_URL = "https://b50d-34-213-171-250.ngrok-free.app/api";
+const API_BASE_URL = "https://bb5d-54-203-17-143.ngrok-free.app/api";
 
 export interface TechnicalAnalysisData {
   Date: string;
@@ -42,8 +42,7 @@ export const getAnalysis = async (company: string): Promise<ApiResponse> => {
 // In your apiService.ts
 export const getSentimentAnalysis = async (ticker: string, companyName: string): Promise<any> => {
   try {
-    companyName = "Apple";
-    ticker = "AAPL"
+    console.log("sfsfrfvwrferw(",ticker, companyName)
     const response = await fetch(`${API_BASE_URL}/sentiment_analysis`, {
       method: 'POST', // Change to POST
       headers: {
