@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { sendMessage } from '../services/chatService';
 import { useParams } from 'react-router-dom';
-import { MessageCircle, Send, Minimize2, Maximize2, Bot } from 'lucide-react';
-import { Alert } from '@/components/ui/alert';
+import {  Send, Minimize2, Maximize2, Bot } from 'lucide-react';
 
 interface ChatMessage {
   text: string;
@@ -35,6 +34,7 @@ const ChatWidget: React.FC = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSendMessage = async () => {
     if (newMessage.trim()) {
