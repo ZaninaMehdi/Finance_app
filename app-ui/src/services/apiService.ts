@@ -1,6 +1,7 @@
 // src/services/apiService.ts
 
 const API_BASE_URL = "https://b50d-34-213-171-250.ngrok-free.app/api";
+
 export interface TechnicalAnalysisData {
   Date: string;
   Close: number;
