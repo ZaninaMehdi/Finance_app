@@ -27,12 +27,41 @@ class AgentPoliciesService:
             logger.error(f"Error getting agent policy ARN: {str(e)}")
             raise e
         
-
+    def is_policy_versions_max(self, policy_arn):
+        try:
+            response = self.aws.iam.list_policy_versions(
+                PolicyArn=policy_arn
+            )
+            # The maximum number of policy versions is 5
+            return len(response['Versions']) >= 5
+        except Exception as e:
+            logger.error(f"Error checking if policy versions are at the maximum: {str(e)}")
+            raise e
+    
+    def delete_policy_versions(self, policy_arn):
+        try:
+            response = self.aws.iam.list_policy_versions(
+                PolicyArn=policy_arn
+            )
+            # Delete all non-default policy versions
+            for version in response['Versions']:
+                if not version['IsDefaultVersion']:
+                    self.aws.iam.delete_policy_version(
+                        PolicyArn=policy_arn,
+                        VersionId=version['VersionId']
+                    )
+                    logger.info(f"Deleted policy version {version['VersionId']} for policy {policy_arn}")
+        except Exception as e:
+            logger.error(f"Error deleting policy versions: {str(e)}")
+            raise e
+            
     def create_agent_policy(self, policy_name, policy_json, description=None):
         try:
             existing_policy_arn = self.get_agent_policy_arn(policy_name)
             if existing_policy_arn:
                 logger.info(f"Agent policy '{policy_name}' already exists")
+                if self.is_policy_versions_max(existing_policy_arn):
+                    self.delete_policy_versions(existing_policy_arn)
                 self.aws.iam.create_policy_version(
                     PolicyArn=existing_policy_arn,
                     PolicyDocument=json.dumps(policy_json),
