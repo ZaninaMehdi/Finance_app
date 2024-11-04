@@ -3,6 +3,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "../src/ui/tab";
 import TechnicalAnalysisCharts from "./components/TechnicalAnalysisCharts";
 import FundamentalAnalysisTables from "./components/FundamentalAnalysisTables";
 import ComprehensiveAnalysisDetails from "./components/ComprehensiveAnalysisDetails";
+import ChatWidget from "./components/chatWidget";
+
 import {
   getAnalysis,
   getFundamentalAnalysis,
@@ -13,8 +15,8 @@ import {
   getComprehensiveAnalysis,
   ComprehensiveAnalysisResponse,
 } from "./services/comprehensiveAnalysisService";
-import ChatWidget from './components/chatWidget';
-import './App.css';
+import SideBar from "./components/SideBar";
+
 interface ChartData {
   Date: string[];
   Close: number[];
@@ -82,52 +84,65 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="w-[70vw] h-[100vh] bg-white shadow-lg rounded-lg p-6 overflow-y-auto mx-auto">
-      <h1 className="text-3xl font-bold mb-6 text-center">
-        Financial Dashboard
-      </h1>
-      {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+    <div className="flex h-screen">
+      <SideBar></SideBar>
+      <div className="flex h-[100vh]">
+        <div className="w-[70vw] bg-white shadow-lg rounded-lg p-6 overflow-y-auto mx-auto">
+          <h1 className="mb-6 text-3xl font-bold text-center">
+            Financial Dashboard
+          </h1>
+          {error && <p className="mb-4 text-center text-red-500">{error}</p>}
 
-      <Tabs defaultValue="technical" className="h-full">
-        <TabsList className="flex justify-center mb-4">
-          <TabsTrigger value="technical" className="px-4 py-2">
-            Technical Analysis
-          </TabsTrigger>
-          <TabsTrigger value="fundamental" className="px-4 py-2">
-            Fundamental Analysis
-          </TabsTrigger>
-          <TabsTrigger value="comprehensive" className="px-4 py-2">
-            Comprehensive Analysis
-          </TabsTrigger>
-        </TabsList>
+          <Tabs defaultValue="technical" className="h-full">
+            <TabsList className="flex justify-center mb-4">
+              <TabsTrigger value="technical" className="px-4 py-2">
+                Technical Analysis
+              </TabsTrigger>
+              <TabsTrigger value="fundamental" className="px-4 py-2">
+                Fundamental Analysis
+              </TabsTrigger>
+              <TabsTrigger value="comprehensive" className="px-4 py-2">
+                Comprehensive Analysis
+              </TabsTrigger>
+            </TabsList>
 
-        <TabsContent value="technical" className="h-full">
-          {chartData ? (
-            <TechnicalAnalysisCharts data={chartData} />
-          ) : (
-            <p className="text-center">Loading technical analysis data...</p>
-          )}
-        </TabsContent>
+            <div className="h-[70%]">
+              {" "}
+              {/* Conteneur des onglets pour occuper 70% de la hauteur */}
+              <TabsContent value="technical" className="h-full">
+                {chartData ? (
+                  <TechnicalAnalysisCharts data={chartData} />
+                ) : (
+                  <p className="text-center">
+                    Loading technical analysis data...
+                  </p>
+                )}
+              </TabsContent>
+              <TabsContent value="fundamental" className="h-full">
+                {fundamentalData ? (
+                  <FundamentalAnalysisTables data={fundamentalData} />
+                ) : (
+                  <p className="text-center">
+                    Loading fundamental analysis data...
+                  </p>
+                )}
+              </TabsContent>
+              <TabsContent value="comprehensive" className="h-full">
+                {comprehensiveData ? (
+                  <ComprehensiveAnalysisDetails data={comprehensiveData} />
+                ) : (
+                  <p className="text-center">
+                    Loading comprehensive analysis data...
+                  </p>
+                )}
+              </TabsContent>
+            </div>
+          </Tabs>
 
-        <TabsContent value="fundamental" className="h-full">
-          {fundamentalData ? (
-            <FundamentalAnalysisTables data={fundamentalData} />
-          ) : (
-            <p className="text-center">Loading fundamental analysis data...</p>
-          )}
-        </TabsContent>
-
-        <TabsContent value="comprehensive" className="h-full">
-          {comprehensiveData ? (
-            <ComprehensiveAnalysisDetails data={comprehensiveData} />
-          ) : (
-            <p className="text-center">
-              Loading comprehensive analysis data...
-            </p>
-          )}
-        </TabsContent>
-      </Tabs>{/* Chat Widget */}
-      <ChatWidget />
+          {/* Chat Widget */}
+          <ChatWidget />
+        </div>
+      </div>
     </div>
   );
 };

@@ -1,0 +1,10 @@
+.tabs-container {
+  width: 70%;
+  max-width: 900px; /* Limite maximum si besoin */
+  margin: auto;
+}
+
+.tab-content {
+  min-height: 600px; /* Fixe la hauteur pour les onglets avec moins de contenu */
+  overflow-y: auto; /* Active le défilement si le contenu est plus long */
+}

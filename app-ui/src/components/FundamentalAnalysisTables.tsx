@@ -46,7 +46,18 @@ interface FundamentalAnalysisData {
     };
   };
 }
-
+// Fonction pour formater les grands nombres en K, M, B
+const formatNumber = (value: number) => {
+  if (Math.abs(value) >= 1_000_000_000) {
+    return (value / 1_000_000_000).toFixed(2) + "B";
+  } else if (Math.abs(value) >= 1_000_000) {
+    return (value / 1_000_000).toFixed(2) + "M";
+  } else if (Math.abs(value) >= 1_000) {
+    return (value / 1_000).toFixed(2) + "K";
+  } else {
+    return value.toFixed(2);
+  }
+};
 interface FundamentalAnalysisTablesProps {
   data: FundamentalAnalysisData;
 }
@@ -54,8 +65,12 @@ interface FundamentalAnalysisTablesProps {
 const FundamentalAnalysisTables: React.FC<FundamentalAnalysisTablesProps> = ({
   data,
 }) => {
-  const formatValue = (value: number | null) =>
-    value !== null && !isNaN(value) ? value.toFixed(2) : "N/A";
+  const formatValue = (value: any) =>
+    value === null || value === undefined || isNaN(value)
+      ? "N/A"
+      : typeof value === "number"
+      ? formatNumber(value)
+      : value;
 
   const renderMetricAccordion = (metricName: string, metrics: Metric[]) => (
     <AccordionItem key={metricName} value={metricName}>
