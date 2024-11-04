@@ -5,11 +5,11 @@ from .knowledge_base_service import KnowledgeBaseService
 from .role_policies_kb_service import RolePoliciesKbService
 from .finance_agent_service import FinanceAgentService
 from .data_source_service import DataSourceService
-from config import logger
-import uuid
+from config import CompanyConfig, logger
 
 class ServiceOrchestrator:
     def __init__(self, company_name: str):
+        self.config = CompanyConfig(company_name)
         self.company_name = company_name
         self.bucket_service = BucketService(company_name)
         self.collection_service = CollectionService(company_name)
@@ -18,7 +18,7 @@ class ServiceOrchestrator:
         self.agent_policies_service = AgentPoliciesService(company_name)
         self.agent_service = FinanceAgentService(company_name)
         self.data_source_service = DataSourceService(company_name)
-
+        
     def initialize(self, kb_files_path: str):
         try:
             # 1. Create and setup S3 bucket
@@ -49,13 +49,8 @@ class ServiceOrchestrator:
             self.agent_service.associate_agent_with_kb(agent, kb_id)
             self.agent_service.prepare_agent(agent['agentId'])
             agent_alias_id = self.agent_service.get_agent_alias(agent['agentId'])['agentAliasId']
-            session_id:str = str(uuid.uuid1())
-            prompt = f"""who's the president of the unietd states."""
-            agent_answer = self.agent_service.simple_agent_invoke(prompt, agent['agentId'], agent_alias_id, session_id)
-
-            return agent_answer
-
-            
+            self.config.update_agent_id(agent['agentId'])
+            self.config.update_agent_alias_id(agent_alias_id)
         except Exception as e:
             logger.error(f"Error initializing services: {str(e)}")
             raise e
