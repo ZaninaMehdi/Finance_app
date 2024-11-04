@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://b50d-34-213-171-250.ngrok-free.app/api";
+const API_BASE_URL = "hhttp://35.160.99.138:5000/api";
 
 // Interfaces pour les données d'analyse complète
 interface CompanyInfo {
@@ -101,7 +101,7 @@ export const getComprehensiveAnalysis = async (
     const response = await fetch(`${API_BASE_URL}/analysis?company=${company}`, {
       method: 'GET',
       headers: {
-        'ngrok-skip-browser-warning': 'skip-browser-warning',
+        // 'ngrok-skip-browser-warning': 'skip-browser-warning',
         'Content-Type': 'application/json',
       },
     });
