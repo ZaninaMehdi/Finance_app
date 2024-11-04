@@ -1,8 +1,6 @@
 // src/services/apiService.ts
 
-const API_BASE_URL = "http://127.0.0.1:5000/api";
-
-// Interfaces for Technical Analysis Data
+const API_BASE_URL = "https://b50d-34-213-171-250.ngrok-free.app/api";
 export interface TechnicalAnalysisData {
   Date: string;
   Close: number;
@@ -20,7 +18,14 @@ export interface ApiResponse {
 export const getAnalysis = async (company: string): Promise<ApiResponse> => {
   try {
     const response = await fetch(
-      `${API_BASE_URL}/technical_analysis?company=${company}`
+      `${API_BASE_URL}/technical_analysis?company=${company}`,
+      {
+        method: 'GET',
+        headers: {
+          'ngrok-skip-browser-warning': 'skip-browser-warning',
+          'Content-Type': 'application/json',
+        },
+      }
     );
     if (!response.ok) {
       throw new Error("Erreur lors de la récupération des données");
@@ -32,6 +37,32 @@ export const getAnalysis = async (company: string): Promise<ApiResponse> => {
     throw error;
   }
 };
+
+// In your apiService.ts
+export const getSentimentAnalysis = async (ticker: string, companyName: string): Promise<any> => {
+  try {
+    companyName = "Apple";
+    ticker = "AAPL"
+    const response = await fetch(`${API_BASE_URL}/sentiment_analysis`, {
+      method: 'POST', // Change to POST
+      headers: {
+        'ngrok-skip-browser-warning': 'skip-browser-warning',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ ticker, company_name: companyName }) // Pass ticker and companyName as body
+    });
+
+    if (!response.ok) {
+      throw new Error("Erreur lors de la récupération de l'analyse de sentiment.");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Erreur:", error);
+    throw error;
+  }
+};
+
 
 // Interfaces for Fundamental Analysis Data
 interface Metric {
@@ -116,7 +147,14 @@ export const getFundamentalAnalysis = async (
 ): Promise<FundamentalAnalysisResponse> => {
   try {
     const response = await fetch(
-      `${API_BASE_URL}/fundamental_analysis?company=${company}`
+      `${API_BASE_URL}/fundamental_analysis?company=${company}`,
+      {
+        method: 'GET',
+        headers: {
+          'ngrok-skip-browser-warning': 'skip-browser-warning',
+          'Content-Type': 'application/json',
+        },
+      }
     );
     if (!response.ok) {
       throw new Error("Erreur lors de la récupération des données");

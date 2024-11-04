@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://127.0.0.1:5000/api";
+const API_BASE_URL = "https://b50d-34-213-171-250.ngrok-free.app/api";
 
 // Interfaces pour les données d'analyse complète
 interface CompanyInfo {
@@ -36,6 +36,7 @@ export interface ComprehensiveAnalysisResponse {
     options: string[];
   };
 }
+
 function cleanData(data: any): any {
   if (Array.isArray(data)) {
     return data.map(cleanData);
@@ -55,7 +56,14 @@ export const getComprehensiveAnalysis = async (
   company: string
 ): Promise<ComprehensiveAnalysisResponse> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/analysis?company=${company}`);
+    const response = await fetch(`${API_BASE_URL}/analysis?company=${company}`, {
+      method: 'GET',
+      headers: {
+        'ngrok-skip-browser-warning': 'skip-browser-warning',
+        'Content-Type': 'application/json',
+      },
+    });
+
     if (!response.ok) {
       throw new Error(
         "Erreur lors de la récupération des données de l'analyse complète."

@@ -4,11 +4,13 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "../src/ui/tab";
 import TechnicalAnalysisCharts from "./components/TechnicalAnalysisCharts";
 import FundamentalAnalysisTables from "./components/FundamentalAnalysisTables";
 import ComprehensiveAnalysisDetails from "./components/ComprehensiveAnalysisDetails";
+import SentimentPopup from "./components/SentimentPopup";
 import {
   getAnalysis,
   getFundamentalAnalysis,
   ApiResponse,
   FundamentalAnalysisResponse,
+  getSentimentAnalysis, // Import the sentiment analysis function
 } from "./services/apiService";
 import {
   getComprehensiveAnalysis,
@@ -32,10 +34,13 @@ const App: React.FC = () => {
     useState<FundamentalAnalysisResponse | null>(null);
   const [comprehensiveData, setComprehensiveData] =
     useState<ComprehensiveAnalysisResponse | null>(null);
+  const [sentimentData, setSentimentData] = useState<any>(null); // State for sentiment data
   const [error, setError] = useState<string | null>(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const popupRef = useRef<HTMLDivElement>(null);
+  const [isLoadingSentiment, setIsLoadingSentiment] = useState(false);
 
+ 
   useEffect(() => {
     const fetchTechnicalData = async () => {
       if (companyName) { // Check if companyName is available
@@ -91,8 +96,20 @@ const App: React.FC = () => {
     };
   };
 
-  const handleSentimentClick = () => {
+  const handleSentimentClick = async () => {
     setIsPopupOpen(true);
+    setIsLoadingSentiment(true);
+    
+    if (companyName) {
+      try {
+        const sentiment = await getSentimentAnalysis("tinker", companyName);
+        setSentimentData(sentiment);
+      } catch (err) {
+        setError("Erreur lors du chargement des données de sentiment.");
+      } finally {
+        setIsLoadingSentiment(false);
+      }
+    }
   };
 
   const closePopup = () => {
@@ -204,30 +221,12 @@ const App: React.FC = () => {
             </button>
             
             {/* Two-column layout with vertical divider */}
-            <div className="flex h-full items-center mt-8">
-              {/* Report Sentiment Column */}
-              <div className="flex-1 pr-4 text-center"> {/* Added text-center here */}
-                <h3 className="text-xl font-bold mb-2">Report Sentiment</h3>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus
-                  lacinia odio vitae vestibulum vestibulum. Cras venenatis euismod
-                  malesuada.
-                </p>
-              </div>
+            {isPopupOpen && (
+  <SentimentPopup 
+  data={sentimentData} 
+  onClose={closePopup}
+  isLoading={isLoadingSentiment}/>)}
 
-              {/* Centered, Bold Vertical Divider */}
-              <div className="w-1 border-l-4 border-gray-700 mx-2 h-2/3"></div>
-
-              {/* Social Media Sentiment Column */}
-              <div className="flex-1 pl-4 text-center"> {/* Added text-center here */}
-                <h3 className="text-xl font-bold mb-2">Social Media Sentiment</h3>
-                <p>
-                  Donec vel mauris quam. Curabitur pellentesque enim at odio
-                  facilisis, ut aliquet est pretium. Nullam sit amet eros auctor,
-                  finibus odio eu, tincidunt est.
-                </p>
-              </div>
-            </div>
           </div>
         </div>
       )}
