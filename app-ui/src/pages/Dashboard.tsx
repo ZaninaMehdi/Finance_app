@@ -136,7 +136,7 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Contenu principal prenant 80% de la hauteur */}
-      <div className="flex-grow w-full p-6 overflow-y-auto bg-white">
+      <div className="flex-grow w-[70%] p-6 overflow-y-auto bg-white"> {/* Adjusted width to 70% */}
         <h1 className="mb-6 text-3xl font-bold text-center">
           Financial Dashboard for {companyName}
         </h1>
