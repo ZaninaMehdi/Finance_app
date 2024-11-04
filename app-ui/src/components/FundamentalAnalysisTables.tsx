@@ -46,7 +46,18 @@ interface FundamentalAnalysisData {
     };
   };
 }
-
+// Fonction pour formater les grands nombres en K, M, B
+const formatNumber = (value: number) => {
+  if (Math.abs(value) >= 1_000_000_000) {
+    return (value / 1_000_000_000).toFixed(2) + "B";
+  } else if (Math.abs(value) >= 1_000_000) {
+    return (value / 1_000_000).toFixed(2) + "M";
+  } else if (Math.abs(value) >= 1_000) {
+    return (value / 1_000).toFixed(2) + "K";
+  } else {
+    return value.toFixed(2);
+  }
+};
 interface FundamentalAnalysisTablesProps {
   data: FundamentalAnalysisData;
 }
@@ -54,8 +65,12 @@ interface FundamentalAnalysisTablesProps {
 const FundamentalAnalysisTables: React.FC<FundamentalAnalysisTablesProps> = ({
   data,
 }) => {
-  const formatValue = (value: number | null) =>
-    value !== null && !isNaN(value) ? value.toFixed(2) : "N/A";
+  const formatValue = (value: any) =>
+    value === null || value === undefined || isNaN(value)
+      ? "N/A"
+      : typeof value === "number"
+      ? formatNumber(value)
+      : value;
 
   const renderMetricAccordion = (metricName: string, metrics: Metric[]) => (
     <AccordionItem key={metricName} value={metricName}>
@@ -63,13 +78,13 @@ const FundamentalAnalysisTables: React.FC<FundamentalAnalysisTablesProps> = ({
         <h4 className="text-lg font-semibold">{metricName}</h4>
       </AccordionTrigger>
       <AccordionContent>
-        <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md mt-2">
+        <table className="min-w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-md">
           <thead>
             <tr>
-              <th className="px-4 py-2 border-b border-gray-200 bg-gray-100 text-left font-medium text-gray-600">
+              <th className="px-4 py-2 font-medium text-left text-gray-600 bg-gray-100 border-b border-gray-200">
                 Period
               </th>
-              <th className="px-4 py-2 border-b border-gray-200 bg-gray-100 text-left font-medium text-gray-600">
+              <th className="px-4 py-2 font-medium text-left text-gray-600 bg-gray-100 border-b border-gray-200">
                 Value
               </th>
             </tr>
@@ -102,12 +117,10 @@ const FundamentalAnalysisTables: React.FC<FundamentalAnalysisTablesProps> = ({
 
   return (
     <div className="p-4">
-      <h2 className="text-2xl font-bold mb-6">
-        Fundamental Analysis Tables for {data.company}
-      </h2>
+      <h2 className="mb-6 text-2xl font-bold">Fundamental Analysis Tables</h2>
 
       {/* Growth Metrics */}
-      <h3 className="text-xl font-semibold mb-4">Growth Metrics</h3>
+      <h3 className="mb-4 text-xl font-semibold">Growth Metrics</h3>
       <Accordion type="single" collapsible>
         {renderMetricAccordion(
           "Revenue Growth",
@@ -125,7 +138,7 @@ const FundamentalAnalysisTables: React.FC<FundamentalAnalysisTablesProps> = ({
       </Accordion>
 
       {/* Profitability Metrics */}
-      <h3 className="text-xl font-semibold mb-4">Profitability Metrics</h3>
+      <h3 className="mb-4 text-xl font-semibold">Profitability Metrics</h3>
       <Accordion type="single" collapsible>
         {renderMetricAccordion(
           "Gross Margin",
@@ -154,7 +167,7 @@ const FundamentalAnalysisTables: React.FC<FundamentalAnalysisTablesProps> = ({
       </Accordion>
 
       {/* Efficiency Metrics */}
-      <h3 className="text-xl font-semibold mb-4">Efficiency Metrics</h3>
+      <h3 className="mb-4 text-xl font-semibold">Efficiency Metrics</h3>
       <Accordion type="single" collapsible>
         {renderMetricAccordion(
           "Asset Turnover",

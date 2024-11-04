@@ -23,10 +23,10 @@ const Search: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen">
-      <div className="flex flex-col items-center mb-16">
+    <div className="flex items-center justify-center h-screen"> {/* Center content */}
+      <div className="flex flex-col items-center w-full"> {/* Take full width */}
         <h1 className="text-7xl font-bold mb-10">Search for a Company</h1>
-        <div className="bg-white w-2/3 shadow-md rounded-lg overflow-hidden flex">
+        <div className="bg-white w-2/3 mx-auto shadow-md rounded-lg overflow-hidden flex"> {/* Center input container */}
           <input
             type="text"
             placeholder="Type the company name..."

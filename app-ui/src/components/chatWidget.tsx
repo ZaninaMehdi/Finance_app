@@ -27,10 +27,10 @@ const ChatWidget: React.FC = () => {
   };
 
   return (
-    <div className="fixed top-0 right-0 w-[30%] h-full bg-white shadow-md flex flex-col font-roboto"> {/* Adjusted width here */}
+    <div className="fixed bottom-0 right-0 w-[30%] h-[85.8%] bg-white shadow-md flex flex-col font-roboto"> {/* Adjusted width here */}
       <div className="bg-indigo-700 text-white px-4 py-2 rounded-tl-lg font-bold flex items-center">
         <span className="mr-2">💬</span>
-        Chat
+        Claudia
       </div>
       <div className="flex-1 p-4 overflow-y-auto flex flex-col">
         {messages.map((message, index) => (
