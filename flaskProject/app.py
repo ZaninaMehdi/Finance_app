@@ -11,8 +11,14 @@ from api.resources.fundamental_analysis import FundamentalAnalysisResource  # Im
 from api.resources.sentiment_analysis import SentimentAnalysisResource
 from api.resources.report_summarizer import ReportSummarizerResource
 
+
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/api/*": {
+    "origins": ["http://localhost:5173"],  # Assuming your React app runs on port 3000
+    "methods": ["GET", "POST", "OPTIONS"],
+    "allow_headers": ["Content-Type"]
+}})
+
 api = Api(app)
 
 # Configuration des routes
@@ -26,5 +32,5 @@ api.add_resource(ReportSummarizerResource, '/api/report_summary')
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
     
