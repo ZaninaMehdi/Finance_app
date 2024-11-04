@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { sendMessage } from '../services/chatService';
-import { MessageCircle, Send, Minimize2, Maximize2, Bot } from 'lucide-react';
-import { Alert } from '@/components/ui/alert';
+import {  Send, Minimize2, Maximize2, Bot } from 'lucide-react';
+import { useParams } from 'react-router-dom';
 
 interface ChatMessage {
   text: string;
@@ -9,7 +9,18 @@ interface ChatMessage {
   timestamp: Date;
 }
 
+const LoadingDots = () => {
+  return (
+    <div className="flex space-x-1 animate-pulse">
+      <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+      <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+      <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+    </div>
+  );
+};
+
 const ChatWidget: React.FC = () => {
+  const { companyName } = useParams<{ companyName: string }>();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [isExpanded, setIsExpanded] = useState(true);
@@ -23,6 +34,7 @@ const ChatWidget: React.FC = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSendMessage = async () => {
     if (newMessage.trim()) {
