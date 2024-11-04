@@ -4,7 +4,7 @@ import os
 from flask import request
 from http import HTTPStatus
 from config import logger
-
+import shutil
 
 class AgentResource(Resource):
     def __init__(self):
@@ -15,7 +15,17 @@ class AgentResource(Resource):
         # Create upload folder if it doesn't exist
         if not os.path.exists(self.UPLOAD_FOLDER):
             os.makedirs(self.UPLOAD_FOLDER)
-
+            
+    def clear_upload_folder(self):
+        """Delete all files in the upload folder."""
+        try:
+            if os.path.exists(self.UPLOAD_FOLDER):
+                shutil.rmtree(self.UPLOAD_FOLDER)
+                os.makedirs(self.UPLOAD_FOLDER)
+                logger.info('Upload folder cleared successfully')
+        except Exception as e:
+            logger.exception('Failed to clear upload folder')
+            
     def allowed_file(self, filename):
         """Check if the file type is allowed based on its extension."""
         return '.' in filename and filename.rsplit('.', 1)[1].lower() in self.ALLOWED_EXTENSIONS
@@ -54,7 +64,7 @@ class AgentResource(Resource):
                     'status': 'error',
                     'message': 'Invalid file type. Only PDF files are allowed.'
                 }, HTTPStatus.BAD_REQUEST
-
+            self.clear_upload_folder()
             # Save the file to the designated upload folder
             file_path = os.path.join(self.UPLOAD_FOLDER, file.filename)
             file.save(file_path)

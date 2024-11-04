@@ -69,13 +69,15 @@ const ChatWidget: React.FC = () => {
     }
   };
 
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('en-US', { 
+  const formatTime = (date?: Date) => {
+    const validDate = date ? new Date(date) : new Date();
+    return validDate.toLocaleTimeString('en-US', { 
       hour: 'numeric', 
-      minute: '2-digit',
+      minute: '2-digit', 
       hour12: true 
     });
   };
+  
 
   return (
     <div className={`fixed right-6 transition-all duration-300 ease-in-out ${
