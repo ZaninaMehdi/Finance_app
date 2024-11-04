@@ -1,5 +1,4 @@
 const API_BASE_URL = "https://bb5d-54-203-17-143.ngrok-free.app/api";
-
 // Interfaces pour les données d'analyse complète
 interface CompanyInfo {
   address1?: string;

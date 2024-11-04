@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Sidebar from './SideBar';
+import { uploadPdfForSummary } from '@/services/uploadService';
+import { useNavigate, Link } from 'react-router-dom';
+import logo from "../assets/logo.webp";
 import { uploadPdfForSummary } from '@/services/uploadService';
 
 const Search = () => {
@@ -9,6 +10,7 @@ const Search = () => {
   const [error, setError] = useState('');
   const [file, setFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [showUpload, setShowUpload] = useState(false);
 
   const handleSearch = async () => {
     const trimmedSearchTerm = searchTerm.trim();
@@ -87,141 +89,125 @@ const Search = () => {
     }
   };
 
-  return (<div>
-    <Sidebar></Sidebar>
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
-      <div className="max-w-3xl mx-auto space-y-8">
-        {/* Introduction Section */}
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="p-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Financial Analysis Dashboard</h1>
-            <div className="prose text-gray-600">
-              <p className="mb-4">
-                Choose your analysis path:
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <h3 className="text-lg font-semibold text-blue-900 mb-2">
-                    📄 Document-Enhanced Analysis
-                  </h3>
-                  <p className="text-sm text-blue-700">
-                    Upload your PDF documents to unlock AI-powered insights. Our system will analyze your documents alongside market data for comprehensive intelligence with your personal AI Chat.
-                  </p>
-                </div>
-                <div className="bg-green-50 p-4 rounded-lg">
-                  <h3 className="text-lg font-semibold text-green-900 mb-2">
-                    📊 Standard Market Analysis
-                  </h3>
-                  <p className="text-sm text-green-700">
-                    Proceed without document upload to access our suite of financial metrics, including market sentiment analysis and performance graphs.
-                  </p>
-                </div>
-              </div>
-            </div>
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      {/* Header with Logo */}
+      <header className="bg-white border-b border-gray-200">
+        <div className="container px-6 mx-auto">
+          <div className="flex items-center h-20">
+            <Link to="/search" className="flex items-center space-x-4">
+              <img src={logo}  alt="Stock Overflow Logo" className="w-auto h-12" />
+              <span className="text-2xl font-bold tracking-tight text-gray-900">
+                STOCK OVERFLOW
+              </span>
+            </Link>
           </div>
         </div>
+      </header>
 
-        {/* Upload Section */}
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="p-6">
-            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-              </svg>
-              Upload PDF Document (Recommended)
-            </h2>
-            <div className="space-y-4">
-              <div className="flex items-center gap-4">
-                <input
-                  type="file"
-                  onChange={handleFileChange}
-                  accept=".pdf"
-                  className="flex-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                />
-                <button
-                  onClick={handleUpload}
-                  disabled={!file || isUploading}
-                  className={`inline-flex items-center px-4 py-2 rounded-md text-sm font-medium ${
-                    !file || isUploading
-                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                      : 'bg-blue-600 text-white hover:bg-blue-700'
-                  }`}
-                >
-                  {isUploading ? (
-                    <div className="flex items-center gap-2">
-                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-gray-300 border-t-white"></div>
-                      Uploading...
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
-                      </svg>
-                      Upload
-                    </div>
-                  )}
-                </button>
-              </div>
-              {file && !isUploading && (
-                <div className="text-sm text-green-600">
-                  ✓ {file.name} selected
-                </div>
-              )}
+      {/* Main Content */}
+      <div className="max-w-5xl px-4 pt-20 mx-auto sm:px-6 lg:px-8">
+        <div className="text-center">
+          <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
+            Financial Analysis Made Simple
+          </h1>
+          <p className="max-w-md mx-auto mt-3 text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
+            Discover comprehensive financial insights powered by AI. Search any company to get started with your custom-made AI Chat.
+          </p>
+
+          {/* Main Search Bar */}
+          <div className="max-w-xl mx-auto mt-10">
+            <div className="flex overflow-hidden rounded-lg shadow-lg">
+              <input
+                type="text"
+                placeholder="Enter company ticker..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyPress={handleKeyPress}
+                className="flex-1 px-6 py-4 text-lg focus:outline-none"
+              />
+              <button
+                onClick={handleSearch}
+                className="px-8 text-white transition duration-150 ease-in-out bg-blue-600 hover:bg-blue-700"
+              >
+                Search
+              </button>
             </div>
           </div>
-        </div>
 
-        {/* Search Section */}
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="p-6">
-            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-              </svg>
-              Search Company
-            </h2>
-            <div className="space-y-4">
-              <div className="flex items-center gap-4">
-                <input
-                  type="text"
-                  placeholder="Enter company name..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  className="flex-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                />
-                <button
-                  onClick={handleSearch}
-                  className="inline-flex items-center px-4 py-2 rounded-md text-sm font-medium min-w-[120px] justify-center bg-blue-600 text-white hover:bg-blue-700"
-                >
-                  <div className="flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          {error && (
+            <div className="max-w-xl mx-auto mt-4">
+              <div className="p-4 rounded-md bg-red-50">
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <svg className="w-5 h-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                     </svg>
-                    Search
                   </div>
-                </button>
-              </div>
-
-              {error && (
-                <div className="rounded-md bg-red-50 p-4">
-                  <div className="flex">
-                    <div className="flex-shrink-0">
-                      <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                    <div className="ml-3">
-                      <p className="text-sm text-red-700">{error}</p>
-                    </div>
+                  <div className="ml-3">
+                    <p className="text-sm text-red-700">{error}</p>
                   </div>
                 </div>
-              )}
+              </div>
             </div>
-          </div>
+          )}
+        </div>
+
+        {/* Optional Upload Section */}
+        <div className="max-w-3xl mx-auto mt-16">
+          <button
+            onClick={() => setShowUpload(!showUpload)}
+            className="flex items-center gap-2 mx-auto text-sm font-medium text-gray-600 hover:text-gray-900"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {showUpload ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+              )}
+            </svg>
+            {showUpload ? 'Hide PDF Upload' : 'Enhance your analysis with a PDF document'}
+          </button>
+
+          {showUpload && (
+            <div className="p-6 mt-4 bg-white rounded-lg shadow-sm">
+              <div className="space-y-4">
+                <div className="flex items-center gap-4">
+                  <input
+                    type="file"
+                    onChange={handleFileChange}
+                    accept=".pdf"
+                    className="flex-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  />
+                  <button
+                    onClick={handleUpload}
+                    disabled={!file || isUploading}
+                    className={`inline-flex items-center px-4 py-2 rounded-md text-sm font-medium ${
+                      !file || isUploading
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'bg-blue-600 text-white hover:bg-blue-700'
+                    }`}
+                  >
+                    {isUploading ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-gray-300 rounded-full animate-spin border-t-white"></div>
+                        Uploading...
+                      </div>
+                    ) : (
+                      'Upload'
+                    )}
+                  </button>
+                </div>
+                {file && !isUploading && (
+                  <div className="text-sm text-green-600">
+                    ✓ {file.name} selected
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
-    </div>
     </div>
   );
 };
