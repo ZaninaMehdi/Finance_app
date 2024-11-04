@@ -14,7 +14,7 @@ from api.resources.report_summarizer import ReportSummarizerResource
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {
-    "origins": ["http://localhost:3000"],  # Assuming your React app runs on port 3000
+    "origins": ["http://localhost:5173"],  # Assuming your React app runs on port 3000
     "methods": ["GET", "POST", "OPTIONS"],
     "allow_headers": ["Content-Type"]
 }})
