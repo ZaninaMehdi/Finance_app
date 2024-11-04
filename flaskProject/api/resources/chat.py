@@ -1,6 +1,6 @@
 from flask_restful import Resource, reqparse
 from ..services.orchestrator_service import ServiceOrchestrator
-from config import logger
+from config import logger, CompanyConfig
 import uuid
 
 class ChatResource(Resource):
@@ -13,6 +13,8 @@ class ChatResource(Resource):
         args = self.req_parser.parse_args()
         prompt = args['prompt']
         company_name = args['company']
+        company_config = CompanyConfig.get_instance(company_name)
+        credentials = company_config.get_agent_credentials()
         service_orchestrator = ServiceOrchestrator(company_name)
         
         try:
@@ -22,8 +24,8 @@ class ChatResource(Resource):
             # Invoke the agent and get the response
             agent_response = service_orchestrator.agent_service.simple_agent_invoke(
                 prompt,
-                service_orchestrator.config.agent_id,
-                service_orchestrator.config.agent_alias_id,
+                credentials['agent_id'],
+                credentials['agent_alias_id'],
                 session_id
             )
 

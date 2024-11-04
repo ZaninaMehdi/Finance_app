@@ -24,15 +24,15 @@ export interface SummaryResponse {
 }
 
 export const uploadPdfForSummary = async (
-  file: File
+  file: File, companyName: string
 ): Promise<SummaryResponse> => {
   const formData = new FormData();
   formData.append("file", file);
-  console.log("Uploading file", file);
-
+  formData.append("company", companyName)
+  console.log("Uploading file", formData);
   try {
     const response = await axios.post<SummaryResponse>(
-      "https://b50d-34-213-171-250.ngrok-free.app/api/report_summary", // Make sure this matches your backend URL
+      "https://bb5d-54-203-17-143.ngrok-free.app/api/agent", // Make sure this matches your backend URL
       formData,
       {
         headers: {

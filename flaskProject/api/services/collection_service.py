@@ -35,7 +35,7 @@ class CollectionService:
     def create_policy(self, policy_name, type, policy_json, description):
         try:
             existing_policy = self.get_security_policy(policy_name, type)
-            if existing_policy:
+            if existing_policy: 
                 logger.info(f"Security policy for collection '{self.kb_collection_name}' already exists")
                 return existing_policy
             else:

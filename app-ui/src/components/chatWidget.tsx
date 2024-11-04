@@ -35,7 +35,12 @@ const ChatWidget: React.FC = () => {
     scrollToBottom();
   }, [messages]);
   const [isLoading, setIsLoading] = useState(false);
-
+  const formatString = (input: string): string => {
+    return input
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-');
+  };
   const handleSendMessage = async () => {
     if (newMessage.trim()) {
       const userMessage = { 
@@ -48,12 +53,11 @@ const ChatWidget: React.FC = () => {
       setIsTyping(true);
 
       try {
-        const response = await sendMessage(newMessage);
-        setIsTyping(false);
-        setMessages(prevMessages => [...prevMessages, {
-          ...response,
-          timestamp: new Date()
-        }]);
+        const response = await sendMessage({
+          prompt: newMessage.toLowerCase(),
+          company: companyName ? formatString(companyName) : '' 
+        });
+        setMessages((prevMessages) => [...prevMessages, response]);
       } catch (error) {
         setIsTyping(false);
         setMessages(prevMessages => [...prevMessages, {

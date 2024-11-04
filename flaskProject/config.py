@@ -114,17 +114,30 @@ class CompanyConfig:
             
     def update_agent_id(self, agent_id):
         """Thread-safe update of agent_id"""
+        if not agent_id:
+            raise ValueError("agent_id cannot be None or empty")
+            
         with self._lock:
             self.agent_id = agent_id
             logger.info(f"Updated agent_id for {self.company_name} to {agent_id}")
-            return self.kb_role_arn
+            return self.agent_id
             
     def update_agent_alias_id(self, agent_alias_id):
         """Thread-safe update of agent_alias_id"""
+        if not agent_alias_id:
+            raise ValueError("agent_alias_id cannot be None or empty")
+            
         with self._lock:
             self.agent_alias_id = agent_alias_id
             logger.info(f"Updated agent_alias_id for {self.company_name} to {agent_alias_id}")
-            return self.kb_role_arn
+            return self.agent_alias_id
+
+    def get_agent_credentials(self):
+        """Get the stored agent and alias IDs"""
+        return {
+            'agent_id': getattr(self, 'agent_id', None),
+            'agent_alias_id': getattr(self, 'agent_alias_id', None)
+        }
             
     def update_kb_role_arn(self, new_arn):
         """Thread-safe update of kb_role_arn"""
@@ -234,9 +247,9 @@ class CompanyConfig:
         self.bedrock_agent_s3_allow_policy_name = f"bda-s3-allow-{self.suffix}"
         self.bedrock_agent_kb_allow_policy_name = f"bda-kb-allow-{self.suffix}"
         self.agent_role_name = f'AmazonBedrockExecutionRoleForAgents_financial_docs'
-        self.kb_name = f'financial-docs-kb-{company_name}-{self.suffix}'
-        self.data_source_name = f'financial-docs-kb-docs-{company_name}-{self.suffix}'
-        self.kb_collection_name = f'bd-kbc-{company_name}-{self.suffix}'
+        self.kb_name = f'financial-docs-kb-{company_name}'
+        self.data_source_name = f'financial-docs-kb-docs-{company_name}'
+        self.kb_collection_name = f'bd-kbc-{company_name}'
         self.kb_files_path = f'kb_documents-{company_name}'
         self.kb_key =f'kb_documents-{company_name}'
         self.kb_role_name = f'AmazonBedrockExecutionRoleForKnowledgeBase_financial_docs'
