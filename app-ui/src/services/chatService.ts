@@ -19,7 +19,7 @@ interface ChatMessage {
 
 export const sendMessage = async (messageData: MessageRequest): Promise<ChatMessage> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/chat`, {  // Update this URL to match your backend endpoint
+    const response = await fetch(`${API_BASE_URL}/chat`, {  // Update this URL to match your backend endpoint
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -33,6 +33,11 @@ class AgentPoliciesService:
             existing_policy_arn = self.get_agent_policy_arn(policy_name)
             if existing_policy_arn:
                 logger.info(f"Agent policy '{policy_name}' already exists")
+                self.aws.iam.create_policy_version(
+                    PolicyArn=existing_policy_arn,
+                    PolicyDocument=json.dumps(policy_json),
+                    SetAsDefault=True
+                )
                 return existing_policy_arn
             else:
                 response = self.aws.iam.create_policy(

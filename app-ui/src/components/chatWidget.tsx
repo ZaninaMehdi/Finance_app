@@ -22,7 +22,12 @@ const ChatWidget: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
+  const formatString = (input: string): string => {
+    return input
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-');
+  };
   const handleSendMessage = async () => {
     if (newMessage.trim()) {
       const userMessage = { text: newMessage, sender: 'user' };
@@ -33,7 +38,7 @@ const ChatWidget: React.FC = () => {
       try {
         const response = await sendMessage({
           prompt: newMessage.toLowerCase(),
-          company: companyName?.toLowerCase() || ''
+          company: companyName ? formatString(companyName) : '' 
         });
         setMessages((prevMessages) => [...prevMessages, response]);
       } catch (error) {

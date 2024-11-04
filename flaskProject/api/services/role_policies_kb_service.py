@@ -42,6 +42,11 @@ class RolePoliciesKbService:
             )['Policy']['Arn']
             logger.info(f"Policy '{self.kb_bedrock_allow_policy_name}' created successfully. ARN: {kb_bedrock_policy_arn}")
         else:
+            self.aws.iam.create_policy_version(
+                PolicyArn=kb_bedrock_policy_arn,
+                PolicyDocument=json.dumps(self.bedrock_kb_allow_fm_model_policy_statement),
+                SetAsDefault=True
+                )
             logger.info(f"Policy '{self.kb_bedrock_allow_policy_name}' already exists. ARN: {kb_bedrock_policy_arn}")
         return kb_bedrock_policy_arn
 
@@ -54,6 +59,11 @@ class RolePoliciesKbService:
             )['Policy']['Arn']
             logger.info(f"Policy '{self.kb_aoss_allow_policy_name}' created successfully. ARN: {kb_aoss_policy_arn}")
         else:
+            self.aws.iam.create_policy_version(
+                PolicyArn=kb_aoss_policy_arn,
+                PolicyDocument=json.dumps(self.bedrock_kb_allow_fm_model_policy_statement),
+                SetAsDefault=True
+                )
             logger.info(f"Policy '{self.kb_aoss_allow_policy_name}' already exists. ARN: {kb_aoss_policy_arn}")
         return kb_aoss_policy_arn
 
@@ -66,6 +76,11 @@ class RolePoliciesKbService:
             )['Policy']['Arn']
             logger.info(f"Policy '{self.kb_s3_allow_policy_name}' created successfully. ARN: {kb_s3_policy_arn}")
         else:
+            self.aws.iam.create_policy_version(
+                PolicyArn=kb_s3_policy_arn,
+                PolicyDocument=json.dumps(self.bedrock_kb_allow_fm_model_policy_statement),
+                SetAsDefault=True
+                )
             logger.info(f"Policy '{self.kb_s3_allow_policy_name}' already exists. ARN: {kb_s3_policy_arn}")
         return kb_s3_policy_arn
 

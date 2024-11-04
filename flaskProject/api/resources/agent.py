@@ -22,6 +22,12 @@ class AgentResource(Resource):
 
     def post(self):
         try:
+            if 'company' not in request.form:
+                logger.error('Company name not provided in the request')
+                return {
+                    'status': 'error',
+                    'message': 'Company name is required'
+                }, HTTPStatus.BAD_REQUEST
             # Check if the 'file' part is in the request
             if 'file' not in request.files:
                 logger.error('No file part in the request')
@@ -31,6 +37,7 @@ class AgentResource(Resource):
                 }, HTTPStatus.BAD_REQUEST
 
             file = request.files['file']
+            company_name = request.form['company']
 
             # Check if the filename is empty (user did not select a file)
             if file.filename == '':
@@ -53,7 +60,7 @@ class AgentResource(Resource):
             file.save(file_path)
             logger.info(f'File {file.filename} uploaded successfully to {file_path}')
 
-            orchestrator = ServiceOrchestrator("cn")
+            orchestrator = ServiceOrchestrator(company_name=company_name)
             response = orchestrator.initialize("/tmp/pdf_uploads")
 
             return {

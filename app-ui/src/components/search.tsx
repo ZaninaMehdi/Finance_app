@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from './SideBar';
+import { uploadPdfForSummary } from '@/services/uploadService';
 
 const Search = () => {
   const navigate = useNavigate();
@@ -9,14 +10,47 @@ const Search = () => {
   const [file, setFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     const trimmedSearchTerm = searchTerm.trim();
     if (trimmedSearchTerm.length === 0) {
       setError('Please enter a valid company name.');
       return;
     }
     setError('');
-    navigate(`/tech-analysis/${trimmedSearchTerm}`);
+    
+    try {
+      // Format the search term
+      const formatString = (input: string): string => {
+        return input
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-');
+      };
+      
+      const formattedSearchTerm = formatString(trimmedSearchTerm);
+      
+      // If there's a file, upload it first
+      if (file) {
+        setIsUploading(true);
+        try {
+          const response = await uploadPdfForSummary(file, formattedSearchTerm);
+          console.log('Upload response:', response);
+        } catch (uploadError) {
+          console.error('Upload error:', uploadError);
+          setError('Failed to upload file. Please try again.');
+          setIsUploading(false);
+          return;
+        }
+        setIsUploading(false);
+      }
+  
+      // Proceed with navigation regardless of file upload
+      navigate(`/tech-analysis/${trimmedSearchTerm}`);
+      
+    } catch (error) {
+      console.error('Error during search process:', error);
+      setError('An error occurred. Please try again.');
+    }
   };
 
   const handleKeyPress = (event) => {
@@ -45,7 +79,7 @@ const Search = () => {
     setIsUploading(true);
     setError('');
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // await new Promise(resolve => setTimeout(resolve, 1000));
       setIsUploading(false);
     } catch (error) {
       setError(error instanceof Error ? error.message : "An unknown error occurred");
