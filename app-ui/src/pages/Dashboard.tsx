@@ -5,11 +5,13 @@ import TechnicalAnalysisCharts from "../components/TechnicalAnalysisCharts";
 import FundamentalAnalysisTables from "../components/FundamentalAnalysisTables";
 import ComprehensiveAnalysisDetails from "../components/ComprehensiveAnalysisDetails";
 import ChatWidget from "../components/chatWidget";
-
+import SentimentPopup from "@/components/SentimentPopup";
 import {
   getAnalysis,
   getFundamentalAnalysis,
   ApiResponse,
+  getSentimentAnalysis, // Added import
+
   FundamentalAnalysisResponse,
 } from "../services/apiService";
 import {
@@ -35,7 +37,9 @@ const Dashboard: React.FC = () => {
   const [comprehensiveData, setComprehensiveData] =
     useState<ComprehensiveAnalysisResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [sentimentData, setSentimentData] = useState<any>(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isLoadingSentiment, setIsLoadingSentiment] = useState(false);
   const popupRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -49,6 +53,7 @@ const Dashboard: React.FC = () => {
         }
       }
     };
+    
 
     const fetchFundamentalData = async () => {
       if (companyName) {
@@ -79,24 +84,6 @@ const Dashboard: React.FC = () => {
     fetchComprehensiveData();
   }, [companyName]);
 
-  const transformData = (json: ApiResponse): ChartData => {
-    const sortedData = json.technical_analysis.sort(
-      (a, b) => new Date(a.Date).getTime() - new Date(b.Date).getTime()
-    );
-    return {
-      Date: sortedData.map((item) => item.Date),
-      Close: sortedData.map((item) => item.Close),
-      Volume: sortedData.map((item) => item.Volume),
-      RSI: sortedData.map((item) => item.RSI),
-      MACD: sortedData.map((item) => item.MACD),
-      MACD_hist: sortedData.map((item) => item.MACD_hist),
-    };
-  };
-
-  const handleSentimentClick = () => {
-    setIsPopupOpen(true);
-  };
-
   const closePopup = () => {
     setIsPopupOpen(false);
   };
@@ -112,6 +99,37 @@ const Dashboard: React.FC = () => {
       closePopup();
     }
   };
+
+  const handleSentimentClick = async () => {
+    setIsPopupOpen(true);
+    setIsLoadingSentiment(true);
+    
+    if (companyName) {
+      try {
+        const sentiment = await getSentimentAnalysis("tinker", companyName);
+        setSentimentData(sentiment);
+      } catch (err) {
+        setError("Erreur lors du chargement des données de sentiment.");
+      } finally {
+        setIsLoadingSentiment(false);
+      }
+    }
+  };
+
+  const transformData = (json: ApiResponse): ChartData => {
+    const sortedData = json.technical_analysis.sort(
+      (a, b) => new Date(a.Date).getTime() - new Date(b.Date).getTime()
+    );
+    return {
+      Date: sortedData.map((item) => item.Date),
+      Close: sortedData.map((item) => item.Close),
+      Volume: sortedData.map((item) => item.Volume),
+      RSI: sortedData.map((item) => item.RSI),
+      MACD: sortedData.map((item) => item.MACD),
+      MACD_hist: sortedData.map((item) => item.MACD_hist),
+    };
+  };
+
 
   useEffect(() => {
     if (isPopupOpen) {
@@ -202,44 +220,11 @@ const Dashboard: React.FC = () => {
 
       {/* Popup pour Sentiment */}
       {isPopupOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div
-            ref={popupRef}
-            className="h-2/3 rounded-3xl relative w-2/3 p-8 bg-white shadow-lg"
-          >
-            <h2 className="top-8 left-1/2 absolute text-5xl font-bold text-center text-red-500 transform -translate-x-1/2">
-              Sentiment
-            </h2>
-            <button
-              onClick={closePopup}
-              className="top-4 right-4 absolute text-lg font-bold text-red-500"
-            >
-              &times;
-            </button>
-
-            <div className="flex items-center h-full mt-8">
-              <div className="flex-1 pr-4 text-center">
-                <h3 className="mb-2 text-xl font-bold">Report Sentiment</h3>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Vivamus lacinia odio vitae vestibulum vestibulum. Cras
-                  venenatis euismod malesuada.
-                </p>
-              </div>
-              <div className="h-2/3 w-1 mx-2 border-l-4 border-gray-700"></div>
-              <div className="flex-1 pl-4 text-center">
-                <h3 className="mb-2 text-xl font-bold">
-                  Social Media Sentiment
-                </h3>
-                <p>
-                  Donec vel mauris quam. Curabitur pellentesque enim at odio
-                  facilisis, ut aliquet est pretium. Nullam sit amet eros
-                  auctor, finibus odio eu, tincidunt est.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <SentimentPopup
+          data={sentimentData}
+          onClose={closePopup}
+          isLoading={isLoadingSentiment}
+        />
       )}
     </div>
   );
