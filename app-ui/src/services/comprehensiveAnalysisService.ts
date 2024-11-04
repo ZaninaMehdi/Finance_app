@@ -15,6 +15,48 @@ interface CompanyInfo {
   sectorDisp?: string;
   longBusinessSummary?: string;
   fullTimeEmployees?: number;
+  longName: string;
+  currentPrice: number;
+  volume: number;
+  marketCap: number;
+
+  // Additional fields
+  dividendRate?: number;
+  dividendYield?: number;
+  payoutRatio?: number;
+  beta?: number;
+  trailingPE?: number;
+  forwardPE?: number;
+  fiftyTwoWeekHigh?: number;
+  fiftyTwoWeekLow?: number;
+  bookValue?: number;
+  priceToBook?: number;
+  totalRevenue?: number;
+  grossMargins?: number;
+  operatingMargins?: number;
+  returnOnAssets?: number;
+  returnOnEquity?: number;
+  totalDebt?: number;
+  debtToEquity?: number;
+  operatingCashflow?: number;
+  freeCashflow?: number;
+  sharesOutstanding?: number;
+  floatShares?: number;
+  shortRatio?: number;
+  recommendationMean?: number;
+  targetHighPrice?: number;
+  targetLowPrice?: number;
+  targetMeanPrice?: number;
+  targetMedianPrice?: number;
+  lastDividendValue?: number;
+  lastDividendDate?: number;
+  impliedSharesOutstanding?: number;
+  earningsGrowth?: number;
+  revenueGrowth?: number;
+  ebitda?: number;
+  ebitdaMargins?: number;
+  profitMargins?: number;
+  trailingPegRatio?: number;
 }
 
 interface FinancialEntry {
