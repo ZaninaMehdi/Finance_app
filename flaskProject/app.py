@@ -10,7 +10,6 @@ from api.resources.bedrock import BedrockResource
 from api.resources.fundamental_analysis import FundamentalAnalysisResource  # Importer la nouvelle ressource
 from api.resources.sentiment_analysis import SentimentAnalysisResource
 from api.resources.report_summarizer import ReportSummarizerResource
-from api.services.orchestrator_service import ServiceOrchestrator
 
 app = Flask(__name__)
 CORS(app)
@@ -27,9 +26,5 @@ api.add_resource(ReportSummarizerResource, '/api/report_summary')
 
 
 if __name__ == '__main__':
-
-    company_name = 'cn'
-    orchestrator = ServiceOrchestrator(company_name)
-
-    print(orchestrator.initialize('kb_documents'))
-
+    app.run(debug=True)
+    
