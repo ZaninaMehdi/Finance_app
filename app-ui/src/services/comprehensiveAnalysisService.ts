@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://127.0.0.1:5000/api";
+const API_BASE_URL = "http://35.160.99.138:5000/api";
 
 // Interfaces pour les données d'analyse complète
 interface CompanyInfo {
