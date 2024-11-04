@@ -8,6 +8,7 @@ from api.resources.technical_analysis import TechnicalAnalysisResource
 from api.resources.news import NewsResource
 from api.resources.bedrock import BedrockResource
 from api.resources.sentiment_analysis import SentimentAnalysisResource
+from api.services.orchestrator_service import ServiceOrchestrator
 
 app = Flask(__name__)
 CORS(app)  # Initialiser CORS pour l'application
@@ -20,5 +21,12 @@ api.add_resource(SentimentAnalysisResource, '/api/sentiment_analysis')
 api.add_resource(NewsResource, '/api/news')
 api.add_resource(BedrockResource, '/api/bedrock')
 
+
 if __name__ == '__main__':
     app.run(debug=True)
+
+    company_name = 'CN'
+    orchestrator = ServiceOrchestrator(company_name)
+
+    print(orchestrator.initialize('data/kb_files'))
+
