@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { uploadPdfForSummary } from '@/services/uploadService';
 import { useNavigate, Link } from 'react-router-dom';
 import logo from "../assets/logo.webp";
 
