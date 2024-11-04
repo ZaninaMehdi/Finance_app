@@ -43,10 +43,10 @@ class CollectionService:
                     description=description,
                     name=policy_name,
                     type=type,
-                    policyDocument=json.dumps(policy_json)
+                    policy=json.dumps(policy_json)
                 )
             logger.info(f"Security policy for collection '{self.kb_collection_name}' created successfully")
-            return response['securityPolicy']
+            return response
         except Exception as e:
             logger.error(f"Error creating security policy for collection '{self.kb_collection_name}': {str(e)}")
             raise e
@@ -62,7 +62,7 @@ class CollectionService:
     def create_security_policy(self):
         return self.create_policy(
             self.kb_collection_name, 
-            'security', 
+            'encryption', 
             self.security_policy_json, 
             'Security policy for financial knowledge base'
         )
@@ -90,16 +90,17 @@ class CollectionService:
                     description=description,
                     name=policy_name,
                     type=type,
-                    policyDocument=json.dumps(policy_json)
+                    policy=json.dumps(policy_json)
                 )
             logger.info(f"Access policy for collection '{self.kb_collection_name}' created successfully")
-            return response['accessPolicy']
+            return response
         except Exception as e:
             logger.error(f"Error creating access policy for collection '{self.kb_collection_name}': {str(e)}")
             raise e
         
     def create_data_policy(self):
-        return self.create_access_policy(self.kb_collection_name, 'data', self.data_policy_json, 'Data policy for financial knowledge base')
+        self.config.update_data_policy_json(self.config.kb_role_arn, self.config.current_role)
+        return self.create_access_policy(self.kb_collection_name, 'data', self.config.data_policy_json, 'Data policy for financial knowledge base')
 
     def get_current_role(self):
         try:
@@ -108,15 +109,26 @@ class CollectionService:
             return response['Arn']
         except Exception as e:
             logger.error(f"Error getting current role: {str(e)}")
+            
+    def get_collection(self):
+        try:
+            response = self.aws.open_search_serverless.list_collections()
+            for collection in response['collectionSummaries']:
+                if collection['name'] == self.kb_collection_name:
+                    return collection
+            logger.info(f"Collection '{self.kb_collection_name}' created successfully")
+            return None
+        except Exception as e:
+            logger.error(f"Error creating collection '{self.kb_collection_name}': {str(e)}")
             raise e
-
+            
     def create_collection(self):
         try:
             existing_collection = self.get_collection()
             if existing_collection:
                 logger.info(f"Collection '{self.kb_collection_name}' already exists")
                 self.config.update_collection_arn(existing_collection["arn"])
-                return existing_collection["arn"]
+                return True
             else:
                 response = self.aws.open_search_serverless.create_collection(
                     description='OpenSearch collection for Financial Analysis Base',
@@ -126,25 +138,27 @@ class CollectionService:
                 )
             logger.info(f"Collection '{self.kb_collection_name}' created successfully")
             self.config.update_collection_arn(response["createCollectionDetail"]["arn"])
-            return response["createCollectionDetail"]["arn"]
+            return False
         except Exception as e:
             logger.error(f"Error creating collection '{self.kb_collection_name}': {str(e)}")
             raise e
         
     def wait_collection_creation(self):
         try:
-            response = self.aws.open_search_serverless.describe_collection(name=self.kb_collection_name)
-            status = response["describeCollectionDetails"]["status"]
-            while status != "ACTIVE":
-                time.sleep(10)
-                response = self.aws.open_search_serverless.describe_collection(name=self.kb_collection_name)
-                status = response["describeCollectionDetails"]["status"]
+            response = self.aws.open_search_serverless.batch_get_collection(names=[self.kb_collection_name])
+            status = response['collectionDetails'][0]['status']
+            while status == 'CREATING':
+                time.sleep(30)
+                response = self.aws.open_search_serverless.batch_get_collection(names=[self.kb_collection_name])
+                status = response['collectionDetails'][0]['status']
             logger.info(f"Collection '{self.kb_collection_name}' is active")
-            return response["describeCollectionDetails"]["arn"]
+            host = (response['collectionDetails'][0]['collectionEndpoint'])
+            final_host = host.replace("https://", "")
+            return final_host
         except Exception as e:
             logger.error(f"Error waiting for collection '{self.kb_collection_name}' to be active: {str(e)}")
             raise e
-
+            
     def create_index(self, final_host):
         credentials = boto3.Session().get_credentials()
         awsauth = AWS4Auth(credentials.access_key, credentials.secret_key, self.region, 'aoss', session_token=credentials.token)
@@ -197,11 +211,12 @@ class CollectionService:
         try:
             self.create_network_policy()
             self.create_security_policy()
-            self.create_data_policy()
             self.get_current_role()
-            self.create_collection()
-            final_host = self.wait_collection_creation()
-            self.create_index(final_host)
+            self.create_data_policy()
+            exists = self.create_collection()
+            if not exists:
+                final_host = self.wait_collection_creation()
+                self.create_index(final_host)
         except Exception as e:
             logger.error(f"Error creating collection '{self.kb_collection_name}': {str(e)}")
             raise e

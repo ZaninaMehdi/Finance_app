@@ -19,7 +19,31 @@ class DataSourceService:
                 dataSourceConfiguration=self.data_source_configuration
             )
             logger.info(f"Data source '{self.data_source_name}' created successfully")
-            return response['dataSource']
+            return response
         except Exception as e:
             logger.error(f"Error creating data source '{self.data_source_name}': {str(e)}")
             raise e
+        
+    def data_source_exists(self, knowledge_base_id):
+        try:
+            response = self.aws.bedrock_agent.list_data_sources(
+                knowledgeBaseId=knowledge_base_id
+            )
+            for data_source in response['dataSourceSummaries']:
+                if data_source['name'] == self.data_source_name:
+                    return data_source['dataSourceId']
+            return None
+        except Exception as e:
+            logger.error(f"Error checking data source '{self.data_source_name}': {str(e)}")
+            raise e
+        
+    def get_data_source(self, knowledge_base_id):
+        data_source_id = self.data_source_exists(knowledge_base_id)
+        if data_source_id:
+            response = self.aws.bedrock_agent.get_data_source(
+                dataSourceId=data_source_id,
+                knowledgeBaseId=knowledge_base_id
+            )
+            return response
+        else:
+            return self.create_data_source(knowledge_base_id)

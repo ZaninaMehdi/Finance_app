@@ -19,8 +19,8 @@ class AgentPoliciesService:
                 Scope='Local',
                 OnlyAttached=False
             )
-            for policy in response['policies']:
-                if policy['policyName'] == policy_name:
+            for policy in response['Policies']:
+                if policy['PolicyName'] == policy_name:
                     return policy['Arn']
             return None
         except Exception as e:
@@ -50,7 +50,8 @@ class AgentPoliciesService:
         return self.create_agent_policy(self.bedrock_agent_bedrock_allow_policy_name, self.bedrock_agent_bedrock_allow_policy_statement)
 
     def create_agent_kb_schema_policy(self):
-        return self.create_agent_policy(self.bedrock_agent_kb_allow_policy_name, self.bedrock_agent_kb_retrival_policy_statement, "Policy to allow agent to retrieve documents from knowledge base." )
+        self.config.update_agent_kb_retrival_policy_statement(self.config.knowledge_base_arn)
+        return self.create_agent_policy(self.bedrock_agent_kb_allow_policy_name, self.config.bedrock_agent_kb_retrival_policy_statement, "Policy to allow agent to retrieve documents from knowledge base." )
 
     def attach_policy_to_role(self, policy_arn, role_name):
         try:
@@ -90,6 +91,8 @@ class AgentPoliciesService:
                 RoleName=role_name
             )
             return response['Role']
+        except self.aws.iam.exceptions.NoSuchEntityException:
+            return None
         except Exception as e:
             logger.error(f"Error getting role '{role_name}': {str(e)}")
             raise e

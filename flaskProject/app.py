@@ -23,10 +23,9 @@ api.add_resource(BedrockResource, '/api/bedrock')
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
 
-    company_name = 'CN'
+    company_name = 'cn'
     orchestrator = ServiceOrchestrator(company_name)
 
-    print(orchestrator.initialize('data/kb_files'))
+    print(orchestrator.initialize('kb_documents'))
 

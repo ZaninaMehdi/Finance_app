@@ -30,10 +30,7 @@ class KnowledgeBaseService:
             if existing_kb:
                 logger.info(f"Knowledge base '{self.kb_name}' already exists")
                 knowledge_base_id = existing_kb["knowledgeBaseId"]
-                kb_details = self.aws.bedrock_agent.get_knowledge_base(
-                    knowledgeBaseId=knowledge_base_id
-                )
-                knowledge_base_arn = kb_details["knowledgeBase"]["knowledgeBaseArn"]
+                knowledge_base_arn = self.aws.bedrock_agent.get_knowledge_base(knowledgeBaseId = knowledge_base_id)["knowledgeBase"]["knowledgeBaseArn"]
                 
                 # Update the shared configuration
                 self.config.update_knowledge_base_arn(knowledge_base_arn)
@@ -41,18 +38,18 @@ class KnowledgeBaseService:
             else:
                 # Wait for any IAM role propagation
                 time.sleep(45)
-                
+                self.config.update_storage_configuration(self.config.collection_arn)
                 response = self.aws.bedrock_agent.create_knowledge_base(
                     name=self.kb_name,
                     description='KB that contains the Annual Financial Report',
-                    roleArn=self.kb_role_arn,
+                    roleArn=self.config.kb_role_arn,
                     knowledgeBaseConfiguration={
                         'type': 'VECTOR',
                         'vectorKnowledgeBaseConfiguration': {
                             'embeddingModelArn': self.embedding_model_arn
                         }
                     },
-                    storageConfiguration=self.storage_configuration
+                    storageConfiguration=self.config.storage_configuration
                 )
                 
                 knowledge_base_id = response["knowledgeBase"]["knowledgeBaseId"]
@@ -67,30 +64,8 @@ class KnowledgeBaseService:
         except Exception as e:
             logger.error(f"Error creating knowledge base '{self.kb_name}': {str(e)}")
             raise e
-            
-    def wait_for_knowledge_base(self, knowledge_base_id):
-        """Wait for knowledge base to be active"""
-        try:
-            while True:
-                response = self.aws.bedrock_agent.get_knowledge_base(
-                    knowledgeBaseId=knowledge_base_id
-                )
-                status = response['knowledgeBase']['status']
-                logger.info(f"Knowledge base status: {status}")
-                
-                if status == 'ACTIVE':
-                    break
-                elif status in ['FAILED', 'ERROR']:
-                    raise Exception(f"Knowledge base creation failed with status: {status}")
-                    
-                time.sleep(30)
-                
-        except Exception as e:
-            logger.error(f"Error waiting for knowledge base '{self.kb_name}': {str(e)}")
-            raise e
 
     def process_knowledge_base_creation(self):
         """Complete process of creating and waiting for knowledge base"""
         knowledge_base_id, knowledge_base_arn = self.create_knowledge_base()
-        self.wait_for_knowledge_base(knowledge_base_id)
         return knowledge_base_id, knowledge_base_arn

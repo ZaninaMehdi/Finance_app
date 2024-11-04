@@ -6,6 +6,7 @@ from .role_policies_kb_service import RolePoliciesKbService
 from .finance_agent_service import FinanceAgentService
 from .data_source_service import DataSourceService
 from config import logger
+import uuid
 
 class ServiceOrchestrator:
     def __init__(self, company_name: str):
@@ -35,20 +36,22 @@ class ServiceOrchestrator:
             kb_id, kb_arn = self.knowledge_base_service.process_knowledge_base_creation()
 
             # 5. Create data source
-            response = self.data_source_service.create_data_source(kb_id)
+            response = self.data_source_service.get_data_source(kb_id)
 
             # 6. Start ingestion job
-            self.agent_service.start_ingestion_job(response["dataSourceId"], kb_id)
+            self.agent_service.start_ingestion_job(response, kb_id)
             
             # 7. Create and setup agent policies
-            agent_role_arn = self.agent_policies_service.role_process()['Arn']
+            agent_role_arn = self.agent_policies_service.role_process()
 
             # 8. Create and setup agent
-            agent = self.agent_service.create_agent(agent_role_arn)
-            self.agent_service.associate_agent_with_kb(agent['agentId'], kb_id)
+            agent = self.agent_service.get_agent(agent_role_arn)
+            self.agent_service.associate_agent_with_kb(agent, kb_id)
             self.agent_service.prepare_agent(agent['agentId'])
-            agent_alias_id = self.agent_service.create_agent_alias(agent['agentId'])[['agentAliasId']]
-            agent_answer = self.agent_service.simple_agent_invoke('How much did the company make last year', agent['agentId'], agent_alias_id)
+            agent_alias_id = self.agent_service.get_agent_alias(agent['agentId'])['agentAliasId']
+            session_id:str = str(uuid.uuid1())
+            prompt = f"""who's the president of the unietd states."""
+            agent_answer = self.agent_service.simple_agent_invoke(prompt, agent['agentId'], agent_alias_id, session_id)
 
             return agent_answer
 
